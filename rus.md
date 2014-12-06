@@ -1,4 +1,4 @@
-# Introduction to entities and components
+# Введение в сущности и компоненты
 
 Imagine you are creating a roleplaying game. You can choose between 4 playable
 characters that differ greatly between themselves - it should be simple enough 
@@ -12,7 +12,7 @@ to implement it in a classical way (or even as simple objects). For example:
         this.damage = 20;
     };
     
-    varhero1 = newHero();
+    var hero1 = newHero();
 
 ## No Country for Old Orcs
 
