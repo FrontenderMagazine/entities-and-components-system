@@ -1,8 +1,8 @@
 # Введение в сущности и компоненты
 
-Imagine you are creating a roleplaying game. You can choose between 4 playable
-characters that differ greatly between themselves - it should be simple enough 
-to implement it in a classical way (or even as simple objects). For example:
+Представьте, что вы создаете ролевую игру. Вы можете выбирать между 4 игровыми
+персонажами, которые существенно отличаются друг от друга - это достаточно просто
+реализуется классическим способом (или даже через обычные объекты). Например:
 
     var Hero = function() {
         this.health = 100;
@@ -14,25 +14,27 @@ to implement it in a classical way (or even as simple objects). For example:
     
     var hero1 = newHero();
 
-## No Country for Old Orcs
+## Старым оркам тут не место
 
-Cool, that works. It doesn’t feel ideal though. What if we add new characters
-later? And what about the enemies?
+Здорово, оно работает, хотя и не идеально. Что, если мы захотим добавить нового
+персонажа позже? И что с врагами?
 
-Let’s forget the extra character for now (leave it to a DLC) and let’s
-focus on the enemies. Suppose we want our orcs to be generated at random (yay 
-diversity) from a set of attributes - maybe we want some that are strong and 
-some that are weak, maybe some with bows, others with axes.
+Давайте пока забудем о дополнительных персонажах (оставим это для загружаемого
+контента) и попробуем сосредоточиться на врагах. Представим, что мы хотим, чтобы
+наши орки генерировались рандомно (ура многообразию) из определенного набора 
+свойств - может быть, мы хотим несколько сильных и несколько слабых, может 
+быть некоторых с луками, других с топорами.
 
-An awesome way to approach this problem is by using an entities and components
-system.
+Лучшим подходом к решению этих вопросов является использование системы сущностей
+и компонентов (*entities and components system, сокращенно ECS - прим.пер.*).
 
-![Avengers, assemble!][1]
+![Мстители, к оружию!][Изображение]
 
-## Yo Dawg I heard you like components
+## Йо, чел, я слышал ты любишь компоненты
 
-Think of components as the smallest building blocks that, assembled together,
-form an entity. For our orc-folk, maybe we could do this:
+Представим компоненты как небольшие строительные блоки, которые, собранные вместе,
+формируют нашего врага. Для нашего фольклорного орка, наверное, можно сделать 
+что-то такое:
 
     var components = {
       orc: function(entity){
@@ -54,31 +56,34 @@ form an entity. For our orc-folk, maybe we could do this:
       }
     };
 
-Then if we do something like this:
+И тогда мы можем сделать так:
 
     var orc1 = {};
     components.orc(orc1);
     components.strong(orc1);
     components.axe(orc1);
 
-We will have an armed, tough orc ready! How cool and simple is this? If we
-wanted to create a human axeman, we could reuse the ‘axe’ component. If we 
-created a Kraken, we could reuse the ‘strong’ component.
+И вот мы подготовили вооруженного, крепкого орка! Как легко и просто мы это 
+сделали? Если мы захотим создать человека, вооруженного топором, мы сможем
+переиспользовать компонент ‘axe’(топор). Если мы создадим Кракена, мы сможем
+переиспользовать компонент ‘strong’(сила).
 
-## System Shock
+## Системный шок
 
-The code above takes care of the entities and their components. But we still
-need to handle them - how do we do that?
+Код выше берет на себя заботы о врагах и их компонентах. Но мы все еще нуждаемся
+в том, чтобы управлять ими - как мы будем это делать?
 
-This is where things get interesting. You can have multiple systems to handle
-the logic of all the entities that have a component from it. The physics system,
-for example, would check for collisions for entities that have the ‘physics’ tag.
+Вот где начинается самое интересное. Вы можете иметь многообразные системы,
+для управления логикой действий всех врагов, что будет реализовано через
+компоненты. Например, физическая система должна проверять на пересечения тех
+врагов, что имеют свойство ‘physics’(физический).
 
-For this to be feasible, we want to add all entities to a list so that we can
-iterate through them and do things like this:
+Чтобы осуществить это, нам нужно добавить всех врагов в список. Так мы сможем
+обходить их в цикле и делать вещи наподобие этих:
 
-    // Enemies only fight you if both are armed or unarmed
-    // When at disadvantage, they run away
+    // Враг будет нападать на вас, только если вы оба вооружены или безоружны
+    // Если он в невыгодном положении, он будет убегать
+
     for(var i = 0; i < entities.length; i++){
         if (player.armed && !entity[i].armed){
             entity[i].run();
@@ -87,16 +92,17 @@ iterate through them and do things like this:
         }
     }
 
-## Improving it 
+## Улучшаем это 
 
-One could argue that I didn’t break things down as much as I could - health
-could be a component by itself as could others. You could then create component 
-bundles for easy entity creation.
+Кто-то может сказать, что я не разбиваю вещи настолько, насколько это возможно
+- здоровье может быть компонентом само по себе, как и все остальное. Тогда 
+станет возможным сгруппировать компоненты для упрощения создания врагов.
 
-Another thing that could be improved is chaining components. For example:
+Еще одной вещью, которая может быть улучшена, является связывание компонентов.
+Например:
 
     var ECS = function(){
-      return { //We return the components
+      return { // Возвращаем компоненты
           health: function() {
             this.health= 100;
             return this; // We return the object
@@ -109,26 +115,26 @@ Another thing that could be improved is chaining components. For example:
       };
     };
 
-This allows us a bit more flexibility and awesome chaining like so:
+Это предоставляет нам немного больше гибкости и формирование цепочек наподобие:
 
     var orc = new ECS();
-    orc.health().strong(); // Clean and simple
+    orc.health().strong(); // Легко и просто
     
     var orc2 = new ECS()
         .health()
-        .strong(); // Even cleaner
+        .strong(); // Еще проще
 
-## Real world examples
+## Примеры из жизни
 
-[CraftyJS][2] is a game framework built all around ECS and there are also
-independent frameworks that one can adapt to game engines, like[ces.js][3] or
-you could implement your own! A nice place to learn more is at the
-[rectangle eater tutorial.][4]
+[CraftyJS][2] является игровым фреймворком, построенным вокруг ECS, также
+существуют независимые фреймворки, которые могут быть встроены в игровые движки,
+как [ces.js][3], или вы можете создать свой собственный! Хорошим местом, где можно
+узнать больше является [урок по созданию игры "Поедатель прямоугольников"][4].
 
-I hope this is helpful, let me know in the comments what you think!
+Надеюсь это было полезным, дайте мне знать, что вы думаете, в комментариях!
 
- [1]: img/ecs_orc.png
- [2]: http://invrse.co/entities-and-components-system/craftyjs.com/
- [3]: https://github.com/qiao/ces.js
+[2]: http://invrse.co/entities-and-components-system/craftyjs.com/
+[3]: https://github.com/qiao/ces.js
+[4]: http://vasir.net/blog/game-development/how-to-build-entity-component-system-in-javascript
 
- [4]: http://vasir.net/blog/game-development/how-to-build-entity-component-system-in-javascript
+[Изображение]: img/ecs_orc.png
